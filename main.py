@@ -13,7 +13,8 @@ pygame.display.set_caption("Platformer")
 # Load the sprite sheet
 cloud_background = pygame.image.load(
     "C:/Users/benja/OneDrive/Desktop/pygame/cloud_bg.png").convert_alpha()
-
+restart_img = pygame.image.load('img/button/restart.png').convert_alpha()
+restart_img = pygame.transform.scale(restart_img, (100, 80))
 # define game variables
 tile_size = 50
 game_over = 0
@@ -25,6 +26,19 @@ def draw_grid():
                          tile_size), (screen_width, line * tile_size))
         pygame.draw.line(screen, (255, 255, 255), (line *
                          tile_size, 0), (line * tile_size, screen_height))
+
+
+class Button():
+    def __init__(self, x, y, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def draw(self):
+
+        # draw button
+        screen.blit(self.image, self.rect)
 
 
 class Player():
@@ -232,9 +246,15 @@ world_data = [
 ]
 
 player = Player(100, screen_height - 130)
+
 blob_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
+
 world = World(world_data)
+
+# create buttons
+restart_button = Button(screen_width // 2 - 50,
+                        screen_height//2+100, restart_img)
 
 # Game loop
 clock = pygame.time.Clock()
@@ -256,7 +276,11 @@ while True:
     lava_group.draw(screen)
 
     game_over = player.update(game_over)
-    # draw_grid()
+
+    #if player has died
+    if game_over == -1:
+        restart_button.draw()
+
     pygame.display.flip()
 
     clock.tick(60)  # Adjust the frame rate to control animation speed
