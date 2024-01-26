@@ -1,5 +1,7 @@
 source venv/Scripts/activate
 #git bash
+.\venv\Scripts\Activate
+#powershell
 
 deactivate
 
