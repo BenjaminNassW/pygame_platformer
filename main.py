@@ -11,13 +11,19 @@ screen = pygame.display.set_mode(
 pygame.display.set_caption("Platformer")
 
 # Load the sprite sheet
-cloud_background = pygame.image.load(
-    "C:/Users/benja/OneDrive/Desktop/pygame/cloud_bg.png").convert_alpha()
+cloud_background = pygame.image.load("clouds_bg.png").convert_alpha()
+cloud_background = pygame.transform.scale(cloud_background, (800, 600))
 restart_img = pygame.image.load('img/button/restart.png').convert_alpha()
 restart_img = pygame.transform.scale(restart_img, (100, 80))
+start_img = pygame.image.load('start_btn.png')
+start_img = pygame.transform.scale(start_img, (100, 80))
+exit_img = pygame.image.load('quit_btn.png')
+exit_img = pygame.transform.scale(exit_img, (100, 80))
+
 # define game variables
 tile_size = 50
 game_over = 0
+main_menu = True
 
 
 def draw_grid():
@@ -278,34 +284,43 @@ world = World(world_data)
 # create buttons
 restart_button = Button(screen_width // 2 - 50,
                         screen_height//2+100, restart_img)
+start_button = Button(screen_width//2 -350, screen_height//2, start_img)
+exit_button = Button(screen_width//2 + 150, screen_height//2, exit_img)
 
 # Game loop
 clock = pygame.time.Clock()
+run = True
+while run:
+    clock.tick(60)  # Adjust the frame rate to control animation speed
 
-while True:
+    # Draw the sprite onto the screen
+    screen.fill((173, 216, 230))  # Fill the screen with a white background
+    screen.blit(cloud_background, (100, 100))
+
+    if main_menu:
+        if exit_button.draw():
+            run = False
+        if start_button.draw():
+            main_menu = False
+    else:
+        world.draw()
+
+        if game_over == 0:
+            blob_group.update()
+        blob_group.draw(screen)
+        lava_group.draw(screen)
+
+        game_over = player.update(game_over)
+
+        # if player has died
+        if game_over == -1:
+            if restart_button.draw():
+                player.reset(100, screen_height - 130)
+                game_over = 0
+
+    pygame.display.flip()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
-    # Draw the sprite onto the screen
-    screen.fill((0, 0, 0))  # Fill the screen with a white background
-    screen.blit(cloud_background, (0, 0))
-    world.draw()
-
-    if game_over == 0:
-        blob_group.update()
-    blob_group.draw(screen)
-    lava_group.draw(screen)
-
-    game_over = player.update(game_over)
-
-    # if player has died
-    if game_over == -1:
-        if restart_button.draw():
-            player.reset(100, screen_height - 130)
-            game_over = 0
-
-    pygame.display.flip()
-
-    clock.tick(60)  # Adjust the frame rate to control animation speed
