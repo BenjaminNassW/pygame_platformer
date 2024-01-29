@@ -11,14 +11,12 @@ screen = pygame.display.set_mode(
 pygame.display.set_caption("Platformer")
 
 # Load the sprite sheet
-cloud_background = pygame.image.load("clouds_bg.png").convert_alpha()
-cloud_background = pygame.transform.scale(cloud_background, (800, 600))
-restart_img = pygame.image.load('img/button/restart.png').convert_alpha()
-restart_img = pygame.transform.scale(restart_img, (100, 80))
-start_img = pygame.image.load('start_btn.png')
-start_img = pygame.transform.scale(start_img, (100, 80))
-exit_img = pygame.image.load('quit_btn.png')
-exit_img = pygame.transform.scale(exit_img, (100, 80))
+sun_img = pygame.image.load('img/sun.png')
+cloud_background = pygame.image.load("img/sky.png")
+restart_img = pygame.image.load('img/restart_btn.png')
+start_img = pygame.image.load('img/start_btn.png')
+exit_img = pygame.image.load('img/exit_btn.png')
+
 
 # define game variables
 tile_size = 50
@@ -159,14 +157,13 @@ class Player():
         self.images_left = []
         self.index = 0
         self.counter = 0
-        for num in range(1, 9):
-            img_right = pygame.image.load(f'img/player/p1_walk0{num}.png')
+        for num in range(1, 5):
+            img_right = pygame.image.load(f'img/guy{num}.png')
             img_right = pygame.transform.scale(img_right, (40, 80))
             img_left = pygame.transform.flip(img_right, True, False)
             self.images_right.append(img_right)
             self.images_left.append(img_left)
-        self.dead_image = pygame.image.load('img/player/dead_ghost.png')
-        self.dead_image = pygame.transform.scale(self.dead_image, (80, 80))
+        self.dead_image = pygame.image.load('img/ghost.png')
         self.image = self.images_right[self.index]
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -185,8 +182,8 @@ class World():
         self.tile_list = []
 
         # load images
-        dirt_img = pygame.image.load('grassCenter.png')
-        grass_img = pygame.image.load('grass.png')
+        dirt_img = pygame.image.load('img/dirt.png')
+        grass_img = pygame.image.load('img/grass.png')
 
         row_count = 0
         for row in data:
@@ -209,10 +206,10 @@ class World():
                     tile = (img, img_rect)
                     self.tile_list.append(tile)
                 if tile == 3:
-                    blob = Enemy(col_count * tile_size, row_count * tile_size)
+                    blob = Enemy(col_count * tile_size, row_count * tile_size + 15)
                     blob_group.add(blob)
                 if tile == 6:
-                    lava = Lava(col_count * tile_size, row_count * tile_size)
+                    lava = Lava(col_count * tile_size, row_count * tile_size + (tile_size // 2))
                     lava_group.add(lava)
 
                 col_count += 1
@@ -226,7 +223,7 @@ class World():
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('img/enemy/blockerMad.png')
+        self.image = pygame.image.load('img/blob.png')
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -244,8 +241,8 @@ class Enemy(pygame.sprite.Sprite):
 class Lava(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        img = pygame.image.load('img/tiles/liquidLavaTop_mid.png')
-        self.image = pygame.transform.scale(img, (tile_size, tile_size))
+        img = pygame.image.load('img/lava.png')
+        self.image = pygame.transform.scale(img, (tile_size, tile_size // 2))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -294,8 +291,8 @@ while run:
     clock.tick(60)  # Adjust the frame rate to control animation speed
 
     # Draw the sprite onto the screen
-    screen.fill((173, 216, 230))  # Fill the screen with a white background
-    screen.blit(cloud_background, (100, 100))
+    screen.blit(cloud_background, (0, 0))
+    screen.blit(sun_img, (100, 100))
 
     if main_menu:
         if exit_button.draw():
@@ -318,7 +315,7 @@ while run:
                 player.reset(100, screen_height - 130)
                 game_over = 0
 
-    pygame.display.flip()
+    pygame.display.update()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

@@ -2,6 +2,7 @@ source venv/Scripts/activate
 #git bash
 .\venv\Scripts\Activate
 #powershell
+si es MAC cambia Scripts por 'bin'
 
 deactivate
 
